@@ -115,5 +115,11 @@ NECRO SKELETONS
 
 /datum/job/roguetown/skeletonbesieger/equip(mob/living/carbon/human/H, visualsOnly, announce, latejoin, datum/outfit/outfit_override, client/preference_source)
 	. = ..()
-	return  H.change_mob_type(/mob/living/carbon/human/species/skeleton, delete_old_mob = TRUE)
+	return H.change_mob_type(/mob/living/carbon/human/species/skeleton, delete_old_mob = TRUE)
 
+	
+/datum/job/roguetown/skeletonbesieger/after_spawn(mob/living/H, mob/M, latejoin = TRUE)
+	. = ..()
+	addtimer(CALLBACK(H, TYPE_PROC_REF(/mob/living/carbon/human, choose_name_popup), "BESIEGER SKELETON"), 3 SECONDS)
+	addtimer(CALLBACK(H, TYPE_PROC_REF(/mob/living/carbon/human, choose_pronouns_and_body)), 5 SECONDS)
+	H.mind.AddSpell(new /obj/effect/proc_holder/spell/self/suicidebomb/lesser)
