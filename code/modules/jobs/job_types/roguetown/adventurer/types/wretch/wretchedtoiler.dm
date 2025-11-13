@@ -69,7 +69,7 @@
 		if("MALICIOUS Mastermind")
 			//stats
 			H.STAINT += 2
-			H.STAPER =+ 1
+			H.STAPER += 1
 			//orders and stuff. you're the MASTERMIND!
 			H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/order/retreat)
 			H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/order/bolster)
@@ -107,7 +107,7 @@
 		if("SNIVELLING servant")
 			//stats
 			H.STACON += 2
-			H.STAEND =+ 1
+			H.STAEND += 1
 			//maximum TOIL!!!
 			H.adjust_skillrank_up_to(/datum/skill/labor/lumberjacking, SKILL_LEVEL_EXPERT, TRUE)
 			H.adjust_skillrank_up_to(/datum/skill/craft/cooking, SKILL_LEVEL_EXPERT, TRUE)
