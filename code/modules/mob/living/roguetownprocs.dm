@@ -26,7 +26,7 @@
 	if( (target.dir == turn(get_dir(target,user), 180)))
 		return zone
 
-	var/chance2hit = 5
+	var/chance2hit = 0
 
 	if(check_zone(zone) == zone)	//Are we targeting a big limb or chest?
 		chance2hit += 20
@@ -50,8 +50,11 @@
 	if(user.STAPER > 10)
 		chance2hit += (min((user.STAPER-10)*8, 40))
 
+	if(user.STAPER > 15)
+		chance2hit += (min((user.STAPER-15)*3, 15))
+
 	if(user.STAPER < 10)
-		chance2hit -= ((10-user.STAPER)*10)
+		chance2hit -= ((10-user.STAPER)*8)
 
 	if(istype(user.rmb_intent, /datum/rmb_intent/aimed))
 		chance2hit += 20
@@ -61,36 +64,27 @@
 	if(HAS_TRAIT(user, TRAIT_CURSE_RAVOX))
 		chance2hit -= 30
 
-
-	var/combined_whiff = chance2hit * user.STAPER * 0.05
 	chance2hit = CLAMP(chance2hit, 5, 95)
-	combined_whiff = CLAMP(combined_whiff, 2, 50)
+
 	var/precision_roll = FALSE
 	var/accuracy_roll = FALSE
-	var/whiff_roll = FALSE
 
-	if(check_zone(zone) == zone)
-		accuracy_roll = prob(chance2hit)	
-		if(accuracy_roll)
+	accuracy_roll = prob(chance2hit)
+	if(accuracy_roll)
+		if(check_zone(zone)) == zone
 			return zone
 		else
-			if(user.client?.prefs.showrolls)
-				to_chat(user, span_warning("Accuracy fail! [chance2hit]%"))
-			return BODY_ZONE_CHEST
-	else
-		precision_roll = prob(chance2hit)
-		if(precision_roll)
-			return zone
-		else 
-			whiff_roll = prob(combined_whiff)
-			if(whiff_roll)
-				if(user.client?.prefs.showrolls)
-					to_chat(user, span_warning("Precision fail! [chance2hit]%. Roll to hit limb hit: [combined_whiff]%"))
-				return check_zone(zone)
+			precision_roll = prob(chance2hit)
+			if(precision_roll)
+				return zone
 			else
 				if(user.client?.prefs.showrolls)
-					to_chat(user, span_warning("Double precision fail! [chance2hit]%. Roll to hit limb missed: [combined_whiff]%"))
-				return BODY_ZONE_CHEST
+					to_chat(user, span_warning("Precision fail! [chance2hit]%"))
+				return check_zone(zone)
+	else
+		if(user.client?.prefs.showrolls)
+			to_chat(user, span_warning("Accuracy fail! [chance2hit]%"))
+		return BODY_ZONE_CHEST		
 
 /mob/proc/get_generic_parry_drain()
 	return 30
