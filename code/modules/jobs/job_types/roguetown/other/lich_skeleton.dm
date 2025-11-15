@@ -262,23 +262,73 @@ LICH SKELETONS
 	beltl = /obj/item/rogueweapon/pick/copper
 
 
-// Skeleton Job used only for the Skeleton Siege event
-//This spawn the skeletons using the stats and equipment from the fortified skeletons above. 
+// Skeleton Job used only for the Skeleton Siege event. This spawn the skeletons using advclasses for fortified skeletons
+//Code is based off the the existing lich.dm and deathknight.dm code,as well as the skeleton.dm job from Vanderlin 
 /datum/job/roguetown/greater_skeleton/lich/besieger
 	title = "Besieger Skeleton"
 	advclass_cat_rolls = list(CTAG_LSKELETON = 20)
 	outfit = /datum/outfit/job/roguetown/greater_skeleton/lich 
 
-/datum/job/roguetown/greater_skeleton/lich/besieger/equip(mob/living/carbon/human/H, visualsOnly, announce, latejoin, datum/outfit/outfit_override, client/preference_source)
-	. = ..()
-	return H.change_mob_type(/mob/living/carbon/human/species/skeleton/no_equipment, delete_old_mob = TRUE)
-
-/datum/job/roguetown/greater_skeleton/lich/besieger/after_spawn(mob/living/L, mob/M, latejoin = TRUE)
-	. = ..()
+/datum/job/roguetown/greater_skeleton/lich/besieger/after_spawn(mob/living/L, mob/M, client/player_client)
+	..()
 	var/mob/living/carbon/human/H = L
-	H.advsetup = TRUE
-	H.invisibility = INVISIBILITY_MAXIMUM
-	H.become_blind("advsetup")
+	L.can_do_sex = FALSE //literaly 1984
+	if(L.mind)
+		L.mind.special_role = "Besieger Skeleton"
+		L.mind.assigned_role = "Besieger Skeleton"
+	if(H.dna && H.dna.species)
+		H.dna.species.species_traits |= NOBLOOD
+		H.dna.species.soundpack_m = new /datum/voicepack/skeleton()
+		H.dna.species.soundpack_f = new /datum/voicepack/skeleton()
+//Skeletonizes our body
+	var/obj/item/bodypart/O = H.get_bodypart(BODY_ZONE_R_ARM)
+	if(O)
+		O.drop_limb()
+		qdel(O)
+	O = H.get_bodypart(BODY_ZONE_L_ARM)
+	if(O)
+		O.drop_limb()
+		qdel(O)
+	H.regenerate_limb(BODY_ZONE_R_ARM)
+	H.regenerate_limb(BODY_ZONE_L_ARM)
+	H.base_intents = list(INTENT_HELP, INTENT_DISARM, INTENT_GRAB, /datum/intent/simple/claw)
+	H.update_a_intents()
+	for (var/obj/item/bodypart/B in H.bodyparts)
+		B.skeletonize(FALSE)
+//Replace_eyes proc from the lich.dm, Gives us undead eyes since we're a skeleton.
+	var/obj/item/organ/eyes/eyes = H.getorganslot(ORGAN_SLOT_EYES)
+	if(eyes)
+		eyes.Remove(H, TRUE)
+		QDEL_NULL(eyes)
+	eyes = new /obj/item/organ/eyes/night_vision/zombie
+	eyes.Insert(H)
+// Last touches. Sets our name, faction, and deletes any char flaws from our preferences.
+	H.ambushable = FALSE
+	if(H.charflaw)
+		QDEL_NULL(H.charflaw)
+	H.mob_biotypes = MOB_UNDEAD
+	H.faction = list("undead")
+	H.name = "Skeleton"
+	H.real_name = "Skeleton"
+// Skelelook proc from lich.dm . Updates our appearance
+	H.hairstyle = "Bald"
+	H.facial_hairstyle = "Shaved"
+	H.underwear = "Nude"
+	H.update_body()
+	H.update_hair()
+	H.update_body_parts(redraw = TRUE)
+//Adds our skeleton traits, then allows us to choose a new name, pronouns, and body frame. Also gives us a spell to explode ourselves if we get stuck.
+	ADD_TRAIT(H, TRAIT_NOMOOD, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_INFINITE_STAMINA, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_NOHUNGER, TRAIT_GENERIC)
+	ADD_TRAIT(src, TRAIT_EASYDISMEMBER, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_NOBREATH, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_NOPAIN, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_TOXIMMUNE, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_NOSLEEP, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_SHOCKIMMUNE, TRAIT_GENERIC)
+	ADD_TRAIT(src, TRAIT_LIMBATTACHMENT, TRAIT_GENERIC)
+	ADD_TRAIT(src, TRAIT_SILVER_WEAK, TRAIT_GENERIC)
 	addtimer(CALLBACK(H, TYPE_PROC_REF(/mob/living/carbon/human, choose_name_popup), "BESIEGER SKELETON"), 3 SECONDS)
-	addtimer(CALLBACK(H, TYPE_PROC_REF(/mob/living/carbon/human, choose_pronouns_and_body)), 5 SECONDS)
+	addtimer(CALLBACK(H, TYPE_PROC_REF(/mob/living/carbon/human, choose_pronouns_and_body)), 7 SECONDS)
 	H.mind.AddSpell(new /obj/effect/proc_holder/spell/self/suicidebomb/lesser)
