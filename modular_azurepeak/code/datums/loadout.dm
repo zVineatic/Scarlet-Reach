@@ -780,5 +780,5 @@ GLOBAL_LIST_EMPTY(loadout_items)
 	path = /obj/item/recipe_book/cooking
 
 /datum/loadout_item/matthios_amulet
-	name = "Amulet of matthios"
+	name = "Amulet of Matthios"
 	path = /obj/item/clothing/neck/roguetown/zcross/matthios
