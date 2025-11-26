@@ -45,7 +45,7 @@
 	if (!H)
 		return
 	var/should_update = FALSE
-	var/list/choices = list("Accessory", "Breast Quantity", "Breast Size", "Ears", "Ear Color One", "Ear Color Two", "Eye Color", "Facial Hairstyle", "Facial Hair Color", "Face Detail", "Hairstyle", "Hair Primary Gradient", "Hair Dye Gradient Color", "Hair Primary Color", "Hair Secondary Gradient Color", "Hair Third Gradient Color", "Horns", "Horn Color", "Penis", "Penis Size", "Tail", "Tail Color One", "Tail Color Two", "Testicles", "Testicle Size", "Vagina", "Wings", "Wing Color")
+	var/list/choices = list("Accessory", "Breast Quantity", "Breast Size", "Ears", "Ear Color One", "Ear Color Two", "Eye Color", "Facial Hairstyle", "Facial Hair Color", "Face Detail", "Hairstyle", "Hair Primary Color", "Hair Secondary Gradient", "Hair Secondary Natural Color", "Hair Third Gradient", "Hair Third Dye Color", "Horns", "Horn Color", "Penis", "Penis Size", "Tail", "Tail Color One", "Tail Color Two", "Testicles", "Testicle Size", "Vagina", "Wings", "Wing Color")
 	var/chosen = input(H, "Change what?", "Appearance") as null|anything in choices
 
 	if(!chosen)
@@ -167,13 +167,13 @@
 				H.update_body_parts()
 				should_update = TRUE
 
-		if("Hair Secondary Gradient Color")
+		if("Hair Secondary Gradient")
 			var/datum/customizer_choice/bodypart_feature/hair/head/humanoid/hair_choice = CUSTOMIZER_CHOICE(/datum/customizer_choice/bodypart_feature/hair/head/humanoid)
 			var/list/valid_gradients = list()
 			for(var/gradient_type in GLOB.hair_gradients)
 				valid_gradients[gradient_type] = gradient_type
 
-			var/new_style = input(H, "Choose your natural gradient", "Secondary Hair Gradient Color") as null|anything in valid_gradients
+			var/new_style = input(H, "Choose your natural gradient", "Secondary Natural Hair Gradient") as null|anything in valid_gradients
 			if(new_style)
 				var/obj/item/bodypart/head/head = H.get_bodypart(BODY_ZONE_HEAD)
 				if(head && head.bodypart_features)
@@ -199,8 +199,8 @@
 						head.add_bodypart_feature(new_hair)
 						should_update = TRUE
 
-		if("Third Hair Gradient Color")
-			var/new_gradient_color = color_pick_sanitized(H, "Choose your natural gradient color", "Third Hair Gradient Color", H.hair_color)
+		if("Hair Secondary Natural Color")
+			var/new_gradient_color = color_pick_sanitized(H, "Choose your natural gradient color", "Secondary Natural Hair Gradient Color", H.hair_color)
 			if(new_gradient_color)
 				var/obj/item/bodypart/head/head = H.get_bodypart(BODY_ZONE_HEAD)
 				if(head && head.bodypart_features)
@@ -229,13 +229,13 @@
 						head.add_bodypart_feature(new_hair)
 						should_update = TRUE
 
-		if("Hair Primary Gradient")
+		if("Hair Third Gradient")
 			var/datum/customizer_choice/bodypart_feature/hair/head/humanoid/hair_choice = CUSTOMIZER_CHOICE(/datum/customizer_choice/bodypart_feature/hair/head/humanoid)
 			var/list/valid_gradients = list()
 			for(var/gradient_type in GLOB.hair_gradients)
 				valid_gradients[gradient_type] = gradient_type
 
-			var/new_style = input(H, "Choose your dye gradient", "Hair Primary Gradient") as null|anything in valid_gradients
+			var/new_style = input(H, "Choose your dye gradient", "Hair Third Dye Gradient") as null|anything in valid_gradients
 			if(new_style)
 				var/obj/item/bodypart/head/head = H.get_bodypart(BODY_ZONE_HEAD)
 				if(head && head.bodypart_features)
@@ -261,7 +261,7 @@
 						head.add_bodypart_feature(new_hair)
 						should_update = TRUE
 
-		if("Hair Third Gradient Color")
+		if("Hair Third Dye Color")
 			var/new_gradient_color = color_pick_sanitized(H, "Choose your third gradient hair color", "Third Hair Gradient Color", H.hair_color)
 			if(new_gradient_color)
 				var/obj/item/bodypart/head/head = H.get_bodypart(BODY_ZONE_HEAD)
