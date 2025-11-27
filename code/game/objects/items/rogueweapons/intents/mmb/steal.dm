@@ -30,7 +30,7 @@
 
 		//Mathematically:
 		// SPD stat is to give an initial baseline to lower skilled thieves and reward speedy thieves slightly.
-		// Journeyman thief will struggle to steal someone with combat mode on at 10 spd vs 10 perception. Otherwise will steal most of the time
+		// Journeyman thief will struggle to steal someone with combat mode on at 10 spd vs 10 perception. Otherwise will steal most of the time.
 		// Very high skilled thieves will be able to manage it quite handily, as long as they're out of sight.
 		// Matthios thieves get a substantial advantage to pickpocketing.
 
@@ -45,10 +45,14 @@
 		to_chat(user, span_notice("I try to steal from [target_human]..."))
 
 		if(do_after(user, 5, target = target_human, progress = 0))
+
+			if(target_human.IsUnconscious()) //They're out of it bro.
+				targetperception = 0
+
 			if(stealroll > targetperception)
 				//TODO add exp here
 
-				if(initialstealroll < targetperception)
+				if(HAS_TRAIT(user, TRAIT_CULTIC_THIEF) && initialstealroll < targetperception)
 					to_chat(user, span_green("Matthios tips fate in my favor..."))
 
 				if(user_human.get_active_held_item())
@@ -97,16 +101,17 @@
 						to_chat(user, span_warning("I didn't find anything there. Perhaps I should look elsewhere."))
 				else
 					to_chat(user, "<span class='warning'>They can see me!")
-			if(stealroll <= 5)
-				target_human.log_message("has had an attempted pickpocket by [key_name(user_human)]", LOG_ATTACK, color="white")
-				user_human.log_message("has attempted to pickpocket [key_name(target_human)]", LOG_ATTACK, color="white")
-				user_human.visible_message(span_danger("[user_human] failed to pickpocket [target_human]!"))
-				to_chat(target_human, span_danger("[user_human] tried pickpocketing me!"))
 			if(stealroll < targetperception)
-				target_human.log_message("has had an attempted pickpocket by [key_name(user_human)]", LOG_ATTACK, color="white")
-				user_human.log_message("has attempted to pickpocket [key_name(target_human)]", LOG_ATTACK, color="white")
-				to_chat(user, span_danger("I failed to pick the pocket! [chance2steal]%!"))
-				to_chat(target_human, span_danger("Someone tried pickpocketing me!"))
+				if(stealroll <= 8)
+					target_human.log_message("has had an attempted pickpocket by [key_name(user_human)]", LOG_ATTACK, color="white")
+					user_human.log_message("has attempted to pickpocket [key_name(target_human)]", LOG_ATTACK, color="white")
+					user_human.visible_message(span_danger("[user_human] failed to pickpocket [target_human]!"))
+					to_chat(target_human, span_danger("[user_human] tried pickpocketing me!"))
+				else
+					target_human.log_message("has had an attempted pickpocket by [key_name(user_human)]", LOG_ATTACK, color="white")
+					user_human.log_message("has attempted to pickpocket [key_name(target_human)]", LOG_ATTACK, color="white")
+					to_chat(user, span_danger("I failed to pick the pocket! [chance2steal]%!"))
+					to_chat(target_human, span_danger("Someone tried pickpocketing me!"))
 				exp_to_gain /= 5 // these can be removed or changed on reviewer's discretion
 			// If we're pickpocketing someone else, and that person is conscious, grant XP
 			if(user != target_human && target_human.stat == CONSCIOUS)
