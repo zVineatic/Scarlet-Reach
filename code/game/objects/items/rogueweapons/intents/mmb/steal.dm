@@ -21,6 +21,7 @@
 
 		if(target_human.cmode)
 			targetperception += 4 // Target is alert, gain +4 extra effective perception
+			to_chat(user, span_notice("[target_human] is tense and is more likely to detect me."))
 
 		if(HAS_TRAIT(user, TRAIT_CULTIC_THIEF)) // Matthios blesses his devout with rolling advantage on thieving checks.
 			advantageroll = roll("1d6") + (thiefskill * 2) + (user.STASPD / 3)
