@@ -166,7 +166,7 @@ GLOBAL_LIST_EMPTY(vampire_objects)
 				living_thralls += 1
 			else // Cleaning up weakrefs to dead
 				thralls -= thrall_ref
-				QDEL(thrall_ref)
+				qdel(thrall_ref)
 		if(living_thralls >= THRALLS_PER_NEONATE)
 			if(feedback)
 				to_chat(owner.current, span_warning("I have already sired two thin-blooded thralls. I cannot sire another."))
